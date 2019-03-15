@@ -1,0 +1,156 @@
+---
+# This playbook installs Asterisk 13; Change the 'hosts: all' to a specific group in your inventory file if you don't want to install on all servers
+- name: Install Asterisk 13
+  hosts: servers
+  gather_facts: false
+  tasks:
+  
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+
+  - name: Update all packages to latest version
+    apt:
+      upgrade: dist
+      
+  - name: Install packages
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - build-essential
+      - wget
+      - libssl-dev
+      - libncurses5-dev
+      - libnewt-dev
+      - libxml2-dev
+      - linux-headers-amd64
+      - libsqlite3-dev
+      - fakeroot
+      - bzip2
+      - libcurl3-dev
+      - libvorbis-dev
+      - libspeex-dev
+      - unixodbc
+      - unixodbc-dev
+      - flex
+      - xsltproc
+      - odbc-postgresql
+      - libusb-dev
+      - bison
+      - g++
+      - subversion
+      - git-core
+      - mysql-server
+      - mysql-client
+      - apache2
+      - php5.6
+      - phpmyadmin
+      - php5.6-mysql
+      - uuid-dev
+      - libjansson-dev
+
+  - name: Restart MySQL Service
+    service:
+      name: mysql
+      state: restarted
+      
+  - name: Enable MySQL Service
+    service:
+      name: mysql
+      enabled: yes
+     
+  - name: Download Asterisk tar package
+    shell: "wget -P /usr/src/ http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz"
+
+    # Add remote_src: yes if deploying to remote machines
+  - name: Extract Asterisk13
+    unarchive:
+      src: /usr/src/asterisk-13-current.tar.gz
+      dest: /usr/src/
+
+  - name: Configure Asterisk13
+    shell: "cd /usr/src/asterisk-13.*; ./configure"
+
+  - name: Copy MenuSelect MakeOpts file
+    copy:
+      src: makeopts
+      dest: /usr/src/makeopts
+ 
+  - name: Move and Clean MakeOpts
+    shell: "mv /usr/src/makeopts /usr/src/asterisk-13.*/"
+
+  - name: Make MenuSelect
+    shell: "cd /usr/src/asterisk-13.*; make menuselect.makeopts"
+
+  - name: Make
+    shell: "cd /usr/src/asterisk-13.*; make"
+
+  - name: Contrib
+    shell: "cd /usr/src/asterisk-13.*; contrib/scripts/get_mp3_source.sh"
+
+  - name: Make Install
+    shell: "cd /usr/src/asterisk-13.*; make install"
+
+  - name: Make Samples
+    shell: "cd /usr/src/asterisk-13.*; make samples"
+
+  - name: Make Config
+    shell: "cd /usr/src/asterisk-13.*; make config"
+
+  - name: Asterisk Command
+    shell: "cd /usr/src/asterisk-13.*; asterisk"
+
+  - name: usr_local.conf
+    shell: 'echo "/usr/local/lib" > /etc/ld.so.conf.d/usr_local.conf'
+
+  - name: Download Module
+    shell: "wget -P /usr/lib/asterisk/modules/ http://asterisk.hosting.lv/bin/codec_g729-ast130-gcc4-glibc-x86_64-core2.so"
+
+  - name: Move Module
+    shell: "mv /usr/lib/asterisk/modules/codec_g729-ast130-gcc4-glibc-x86_64-core2.so /usr/lib/asterisk/modules/codec_g729.so"
+
+  - name: Module Permissions
+    shell: "chmod 777 /usr/lib/asterisk/modules/codec_g729.so"
+
+  - name: Delete asterisk etc
+    shell: "rm -rf /etc/asterisk"
+
+  - name: Mkdir asterisk etc
+    shell: "mkdir /etc/asterisk"
+
+  - name: Copy asterisk etc files
+    shell: "cp -r /root/Install_asterisk/asterisk_normal/* /etc/asterisk"
+
+  - name: Delete MySQL etc
+    shell: "rm -rf /etc/mysql/my.cnf"
+
+  - name: Copy MySQL etc file
+    shell: "cp /root/Install_asterisk/my.cnf /etc/mysql/my.cnf"
+
+  - name: Make Clean
+    shell: "cd /usr/src/asterisk-13.*; make clean"
+
+  - name: Install Pre-reqs
+    shell: "cd /usr/src/asterisk-13.*/contrib/scripts; ./install_prereq install; ./install_prereq install-unpackaged"
+
+  - name: Configure with crypto
+    shell: "cd /usr/src/asterisk-13.*; ./configure -with-crypto -with-ssl -with-srtp=/usr/local/lib --libdir=/usr/lib64/"
+
+  - name: Contrib
+    shell: "cd /usr/src/asterisk-13.*; contrib/scripts/get_mp3_source.sh"
+
+  - name: Make MenuSelect Again
+    shell: "cd /usr/src/asterisk-13.*; make menuselect"
+
+  - name: Configure with cryptop again
+    shell: "cd /usr/src/asterisk-13.*; ./configure -with-crypto -with-ssl -with-srtp=/usr/local/lib --libdir=/usr/lib64/"
+
+  - name: Contrib
+    shell: "cd /usr/src/asterisk-13.*; contrib/scripts/get_mp3_source.sh"
+
+  - name: Make
+    shell: "cd /usr/src/asterisk-13.*; make"
+
+  - name: Make Config
+    shell: "cd /usr/src/asterisk-13.*; make config"
