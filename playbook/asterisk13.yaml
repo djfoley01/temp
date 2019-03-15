@@ -86,8 +86,8 @@
   - name: Make
     shell: "cd /usr/src/asterisk-13.*; make"
 
-  - name: Contrib
-    shell: "cd /usr/src/asterisk-13.*; contrib/scripts/get_mp3_source.sh"
+#  - name: Contrib
+#    shell: "cd /usr/src/asterisk-13.*; contrib/scripts/get_mp3_source.sh"
 
   - name: Make Install
     shell: "cd /usr/src/asterisk-13.*; make install"
@@ -137,17 +137,17 @@
   - name: Configure with crypto
     shell: "cd /usr/src/asterisk-13.*; ./configure -with-crypto -with-ssl -with-srtp=/usr/local/lib --libdir=/usr/lib64/"
 
-  - name: Contrib
-    shell: "cd /usr/src/asterisk-13.*; contrib/scripts/get_mp3_source.sh"
+#  - name: Contrib
+#    shell: "cd /usr/src/asterisk-13.*; contrib/scripts/get_mp3_source.sh"
 
   - name: Make MenuSelect Again
-    shell: "cd /usr/src/asterisk-13.*; make menuselect"
+    shell: "cd /usr/src/asterisk-13.*; make menuselect.makeopts"
 
   - name: Configure with cryptop again
     shell: "cd /usr/src/asterisk-13.*; ./configure -with-crypto -with-ssl -with-srtp=/usr/local/lib --libdir=/usr/lib64/"
 
-  - name: Contrib
-    shell: "cd /usr/src/asterisk-13.*; contrib/scripts/get_mp3_source.sh"
+#  - name: Contrib
+#    shell: "cd /usr/src/asterisk-13.*; contrib/scripts/get_mp3_source.sh"
 
   - name: Make
     shell: "cd /usr/src/asterisk-13.*; make"
