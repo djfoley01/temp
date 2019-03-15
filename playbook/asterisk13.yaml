@@ -98,8 +98,8 @@
   - name: Make Config
     shell: "cd /usr/src/asterisk-13.*; make config"
 
-  - name: Asterisk Command
-    shell: "cd /usr/src/asterisk-13.*; asterisk"
+#  - name: Asterisk Command
+#    shell: "cd /usr/src/asterisk-13.*; asterisk"
 
   - name: usr_local.conf
     shell: 'echo "/usr/local/lib" > /etc/ld.so.conf.d/usr_local.conf'
